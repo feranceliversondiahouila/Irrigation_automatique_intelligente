@@ -1,0 +1,5 @@
+gradio
+tensorflow
+pandas
+scikit-learn
+numpy
