@@ -1,0 +1,17 @@
+RAPPORT D'ÉVALUATION — Irrigation Automatique Intelligente
+============================================================
+
+Taille du dataset : 2000 lignes (1600 train / 400 test)
+
+Réseau de neurones multicouche (MLP)
+  Accuracy  : 0.760
+  Precision : 0.703
+  Recall    : 0.783
+  F1-score  : 0.741
+
+RandomForest (baseline classique)
+  Accuracy  : 0.752
+  Precision : 0.709
+  Recall    : 0.737
+  F1-score  : 0.723
+

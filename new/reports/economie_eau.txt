@@ -1,0 +1,12 @@
+ÉCONOMIE D'EAU — Effet de la météo réelle sur la décision d'arrosage
+=================================================================
+
+Sur 2000 situations simulées avec un sol sec (< 30% d'humidité) :
+
+  Règle naïve (arrose dès que le sol est sec, ignore la météo)
+    -> 485 arrosages déclenchés, 2840 L/m² au total
+
+  Règle avec météo réelle (annule si pluie prévue >= 5 mm sous 24h)
+    -> 391 arrosages déclenchés, 2298 L/m² au total
+
+Économie estimée grâce à la météo : 19.1 %

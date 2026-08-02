@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+
+# Environnements virtuels
+.venv/
+venv/
+
+# Interface Gradio : historique de requêtes signalées par les utilisateurs
+.gradio/
+
+# Éditeurs / OS
+.vscode/
+.idea/
+.DS_Store
