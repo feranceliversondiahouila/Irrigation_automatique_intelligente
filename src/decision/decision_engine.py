@@ -33,8 +33,7 @@ from meteo import obtenir_meteo
 from dataset import entree_unique, categorie_large
 from predict import _charger_artefacts
 from biologie.biological_impact import BiologicalImpactEngine
-from conseil.conseil import ConseilsPhytosanitaires
-
+from conseil.Conseil import ConseilsPhytosanitaires
 
 def diagnostic_complet(zone: dict) -> dict:
     """
