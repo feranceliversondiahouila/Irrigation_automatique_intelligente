@@ -25,6 +25,29 @@ CATEGORIES_CULTURE = ["Maraîchage", "Céréales", "Arboriculture"]
 
 CIBLE = "besoin_arrosage"
 
+# Cultures spécifiques proposées à la création d'une zone (plus parlant que
+# les 3 catégories larges du modèle : "la tomate va flétrir" plutôt que
+# "le Maraîchage va flétrir"). Chaque culture spécifique est rattachée à une
+# des 3 catégories larges CATEGORIES_CULTURE, utilisées par le modèle ML
+# (qui n'a pas été entraîné culture par culture, mais par grande famille).
+CULTURES_SPECIFIQUES = {
+    "Tomate": "Maraîchage",
+    "Laitue": "Maraîchage",
+    "Pomme de terre": "Maraîchage",
+    "Maïs": "Céréales",
+    "Blé": "Céréales",
+    "Riz": "Céréales",
+    "Pommier": "Arboriculture",
+    "Oranger": "Arboriculture",
+    "Vigne": "Arboriculture",
+}
+
+
+def categorie_large(culture_specifique: str) -> str:
+    """Traduit une culture spécifique (ex : 'Tomate') vers la catégorie large
+    attendue par le modèle ML (ex : 'Maraîchage')."""
+    return CULTURES_SPECIFIQUES.get(culture_specifique, "Maraîchage")
+
 DATA_CSV = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "irrigation_dataset.csv")
 
 

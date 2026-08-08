@@ -139,6 +139,15 @@ explicable par des règles simples. C'est un résultat honnête à présenter :
 il montre une vraie démarche de comparaison plutôt qu'un choix arbitraire du
 Deep Learning "parce que ça fait sérieux".
 
+## Comptes & sécurité
+
+- Connexion par nom d'utilisateur/mot de passe stockés dans `irrigai.db`
+  (SQLite local, créé au premier lancement). Compte par défaut : `admin` / `admin`.
+- **Mots de passe stockés en clair** (choix assumé pour ce projet pédagogique,
+  pas de chiffrement). À ne jamais faire sur une vraie application publique.
+- Le superutilisateur peut ajouter/supprimer des comptes et des zones ; un
+  compte normal peut seulement consulter et lancer les diagnostics.
+
 ## Limites connues (bon point à mentionner à l'oral)
 
 - Le dataset est **simulé**, pas mesuré sur le terrain : les règles utilisées

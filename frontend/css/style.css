@@ -20,6 +20,7 @@
   --glass-shadow: rgba(20, 50, 35, 0.12);
   --input-bg: rgba(255, 255, 255, 0.6);
   --accent: #1f7a5c;
+  --accent-2: #2f6fb0;
   --accent-ink: #06140d;
   --blob-1: #7fd9b0;
   --blob-2: #7ec9f0;
@@ -39,6 +40,7 @@
   --glass-shadow: rgba(0, 0, 0, 0.55);
   --input-bg: rgba(255, 255, 255, 0.08);
   --accent: #6fe0a0;
+  --accent-2: #7cc4f0;
   --accent-ink: #06140d;
   --blob-1: #12503a;
   --blob-2: #123a52;
@@ -50,6 +52,12 @@
 
 * { box-sizing: border-box; }
 
+/* CRITIQUE : sans ce !important, la règle "#login-screen { display: flex }"
+   plus bas (spécificité ID) l'emporterait sur l'attribut HTML "hidden"
+   (spécificité attribut, plus faible) — l'écran de connexion resterait
+   affiché même une fois "hidden" posé par le JS après connexion. */
+[hidden] { display: none !important; }
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -60,35 +68,22 @@ body {
   overflow-x: hidden;
 }
 
-h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.01em; }
+h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.01em; }
 h2 { margin-top: 0; }
 
 /* ---------------------------------------------------------------
-   Fond animé : trois "bulles" floues qui dérivent doucement —
-   c'est ce fond mouvant qui rend le verre dépoli visible/vivant.
+   Fond animé
    --------------------------------------------------------------- */
 .ambient-blobs { position: fixed; inset: 0; z-index: -1; overflow: hidden; }
-.blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.55;
-  animation: drift 24s ease-in-out infinite alternate;
-}
+.blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.55; animation: drift 24s ease-in-out infinite alternate; }
 .blob-a { width: 480px; height: 480px; background: var(--blob-1); top: -140px; left: -100px; }
 .blob-b { width: 420px; height: 420px; background: var(--blob-2); bottom: -160px; right: -80px; animation-delay: -8s; }
 .blob-c { width: 340px; height: 340px; background: var(--blob-3); top: 45%; left: 58%; animation-delay: -16s; }
-
-@keyframes drift {
-  from { transform: translate(0, 0) scale(1); }
-  to   { transform: translate(50px, -40px) scale(1.1); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .blob { animation: none; }
-}
+@keyframes drift { from { transform: translate(0, 0) scale(1); } to { transform: translate(50px, -40px) scale(1.1); } }
+@media (prefers-reduced-motion: reduce) { .blob { animation: none; } }
 
 /* ---------------------------------------------------------------
-   Utilitaire "verre" : fond translucide + flou d'arrière-plan
+   Verre
    --------------------------------------------------------------- */
 .glass {
   background: var(--glass-bg);
@@ -100,113 +95,140 @@ h2 { margin-top: 0; }
 }
 
 /* ---------------------------------------------------------------
-   Barre de navigation
+   Écran de connexion
+   --------------------------------------------------------------- */
+#login-screen {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.login-card { width: 100%; max-width: 380px; padding: 40px; text-align: center; }
+.login-illustration { display: flex; justify-content: center; margin-bottom: 4px; }
+.plant-svg { width: 110px; height: 110px; }
+.leaf { transform-box: fill-box; transform-origin: bottom center; animation: leafSway 4s ease-in-out infinite; }
+.leaf-right { animation-delay: -2s; }
+@keyframes leafSway {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(-5deg); }
+}
+.droplet { transform-box: fill-box; transform-origin: center; animation: dropletFall 2.6s ease-in infinite; }
+@keyframes dropletFall {
+  0%   { transform: translateY(0); opacity: 0; }
+  8%   { opacity: 1; }
+  65%  { transform: translateY(88px); opacity: 1; }
+  78%  { transform: translateY(92px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf, .droplet { animation: none; }
+}
+.login-card h1 { margin: 0 0 6px; font-size: 1.8em; }
+.login-card label { display: block; text-align: left; margin: 16px 0 0; font-size: 0.9em; color: var(--text-muted); }
+.login-card input {
+  width: 100%; margin-top: 5px; padding: 10px 12px; border-radius: 10px;
+  border: 1px solid var(--glass-border); background: var(--input-bg); color: var(--text); font-family: var(--font-body);
+}
+.btn-block { width: 100%; margin-top: 22px; }
+.login-erreur { color: var(--danger); font-size: 0.9em; min-height: 1.2em; margin-top: 12px; }
+
+/* ---------------------------------------------------------------
+   Nav
    --------------------------------------------------------------- */
 .nav-bar {
-  position: sticky;
-  top: 16px;
-  z-index: 1000;
-  margin: 16px auto;
-  max-width: 1100px;
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  padding: 12px 22px;
+  position: sticky; top: 16px; z-index: 1000; margin: 16px auto; max-width: 1150px;
+  display: flex; align-items: center; gap: 20px; padding: 12px 22px; flex-wrap: wrap;
 }
 .brand { font-family: var(--font-display); font-weight: 700; margin-right: auto; }
-.nav-links { display: flex; gap: 20px; }
-.nav-links a {
-  color: var(--text); text-decoration: none; font-weight: 500;
-  font-size: 0.92em; opacity: 0.85; transition: opacity 0.15s ease, color 0.15s ease;
-}
+.nav-links { display: flex; gap: 18px; flex-wrap: wrap; }
+.nav-links a { color: var(--text); text-decoration: none; font-weight: 500; font-size: 0.9em; opacity: 0.85; transition: opacity 0.15s ease, color 0.15s ease; }
 .nav-links a:hover { opacity: 1; color: var(--accent); }
+.user-badge { font-size: 0.85em; color: var(--text-muted); font-family: var(--font-mono); }
 #theme-toggle {
-  background: var(--input-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 50%;
-  width: 38px; height: 38px;
-  cursor: pointer;
-  font-size: 1.05em;
-  transition: transform 0.15s ease;
+  background: var(--input-bg); border: 1px solid var(--glass-border); border-radius: 50%;
+  width: 36px; height: 36px; cursor: pointer; font-size: 1em; transition: transform 0.15s ease;
 }
 #theme-toggle:hover { transform: scale(1.08); }
 
 /* ---------------------------------------------------------------
-   Bannière
+   Hero
    --------------------------------------------------------------- */
-.hero { display: flex; justify-content: center; padding: 60px 20px 24px; }
-.hero-card { max-width: 720px; padding: 44px; text-align: center; }
-.hero-card h1 { font-size: 2.6em; margin: 0 0 10px; }
-.tagline { font-size: 1.2em; color: var(--accent); font-weight: 600; margin: 0 0 12px; }
+.hero { display: flex; justify-content: center; padding: 50px 20px 24px; }
+.hero-card { max-width: 720px; padding: 40px; text-align: center; }
+.hero-card h1 { font-size: 2.4em; margin: 0 0 10px; }
+.tagline { font-size: 1.15em; color: var(--accent); font-weight: 600; margin: 0 0 12px; }
 .subtitle { color: var(--text-muted); line-height: 1.55; margin: 0; }
 
 /* ---------------------------------------------------------------
    Sections
    --------------------------------------------------------------- */
-main { max-width: 1100px; margin: 0 auto; padding: 10px 20px 20px; display: flex; flex-direction: column; gap: 24px; }
+main { max-width: 1150px; margin: 0 auto; padding: 10px 20px 20px; display: flex; flex-direction: column; gap: 24px; }
 .section-card { padding: 32px; scroll-margin-top: 90px; }
-.section-card h3 { margin-top: 30px; margin-bottom: 10px; }
-.hint { color: var(--text-muted); margin-top: -4px; }
+.section-card h3 { margin-top: 26px; margin-bottom: 10px; }
+.hint { color: var(--text-muted); margin-top: -4px; font-size: 0.92em; }
 
-.grid-2 { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: start; }
+.grid-2 { display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; align-items: start; }
 @media (max-width: 760px) { .grid-2 { grid-template-columns: 1fr; } }
 
-/* Contrôles */
-.controls label { display: block; margin-bottom: 16px; font-size: 0.92em; color: var(--text-muted); }
+/* Contrôles génériques */
+.controls label { display: block; margin-bottom: 14px; font-size: 0.9em; color: var(--text-muted); }
 .controls input[type="range"] { width: 100%; accent-color: var(--accent); margin-top: 4px; }
-.controls select {
+.controls input[type="text"], .controls input[type="number"], .controls select {
   width: 100%; padding: 9px 10px; border-radius: 10px; border: 1px solid var(--glass-border);
   background: var(--input-bg); color: var(--text); font-family: var(--font-body); margin-top: 4px;
 }
+.checkbox-line { display: flex !important; align-items: center; gap: 8px; }
+.checkbox-line input { width: auto !important; margin: 0 !important; }
 
 .actions { display: flex; gap: 10px; margin-top: 8px; }
 .btn-primary, .btn-ghost {
   padding: 10px 18px; border-radius: 12px; font-weight: 600; cursor: pointer;
-  font-family: var(--font-body); font-size: 0.95em;
+  font-family: var(--font-body); font-size: 0.92em; border: none;
   transition: transform 0.12s ease, opacity 0.12s ease;
 }
-.btn-primary { background: var(--accent); color: var(--accent-ink); border: none; }
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
 .btn-ghost { background: var(--input-bg); color: var(--text); border: 1px solid var(--glass-border); }
-.btn-primary:hover, .btn-ghost:hover { transform: translateY(-1px); }
+.btn-small { padding: 7px 12px; font-size: 0.85em; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-primary:hover, .btn-ghost:hover, .btn-danger:hover { transform: translateY(-1px); }
 
-.result-panel { background: var(--input-bg); border-radius: 16px; padding: 20px; }
-.result-panel h3 { margin-top: 0; }
-.result-text { font-family: var(--font-mono); font-size: 1.05em; white-space: pre-line; }
-
-/* Lignes ville / recharge */
 .row { display: flex; gap: 10px; align-items: center; margin: 10px 0 16px; }
-.row input[type="text"], .row input[type="number"] {
-  flex: 1; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--glass-border);
-  background: var(--input-bg); color: var(--text); font-family: var(--font-body);
-}
+.row input { flex: 1; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--input-bg); color: var(--text); }
 
-.info-box {
-  background: var(--input-bg); border-radius: 14px; padding: 14px 16px;
-  margin: 10px 0; white-space: pre-line; font-size: 0.95em; line-height: 1.5;
-}
-.mono-box {
-  font-family: var(--font-mono); background: var(--input-bg); border-radius: 14px;
-  padding: 14px 16px; white-space: pre-wrap; font-size: 0.82em; line-height: 1.55;
-}
+.info-box { background: var(--input-bg); border-radius: 14px; padding: 14px 16px; margin: 10px 0; white-space: pre-line; font-size: 0.94em; line-height: 1.5; }
+.mono-box { font-family: var(--font-mono); background: var(--input-bg); border-radius: 14px; padding: 14px 16px; white-space: pre-wrap; font-size: 0.8em; line-height: 1.6; max-height: 320px; overflow-y: auto; }
 
-/* Zones */
-.zones-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin: 14px 0 18px; }
-.zone-card { background: var(--input-bg); border-radius: 16px; padding: 16px; border: 1px solid var(--glass-border); }
-.zone-card h4 { margin: 0 0 2px; font-family: var(--font-display); }
-.zone-card p { margin: 0 0 10px; color: var(--text-muted); font-size: 0.88em; }
-.zone-card label { display: block; font-size: 0.85em; color: var(--text-muted); }
-.zone-card input[type="range"] { width: 100%; accent-color: var(--accent); margin-top: 4px; }
-.zone-status { font-weight: 700; margin: 10px 0 0; font-size: 0.92em; }
-.status-arrosage { color: var(--danger); }
-.status-surveiller { color: var(--warning); }
-.status-stable { color: var(--success); }
+/* ---------------------------------------------------------------
+   Zones
+   --------------------------------------------------------------- */
+.zones-liste { display: flex; flex-direction: column; gap: 16px; margin-top: 16px; }
+.zone-carte { background: var(--input-bg); border-radius: 18px; padding: 20px; border: 1px solid var(--glass-border); }
+.zone-entete { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; }
+.zone-entete h4 { margin: 0; font-size: 1.15em; }
+.zone-meta { color: var(--text-muted); font-size: 0.86em; margin: 2px 0 0; }
+.zone-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.zone-toggles { display: flex; gap: 18px; margin: 14px 0; flex-wrap: wrap; }
+.toggle-line { display: flex; align-items: center; gap: 8px; font-size: 0.88em; color: var(--text-muted); }
+.zone-humidite-edit { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+.zone-humidite-edit input { width: 90px; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--input-bg); color: var(--text); }
+.zone-diagnostic { margin-top: 14px; }
+.zone-diagnostic .info-box { margin: 6px 0; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.78em; font-weight: 700; }
+.badge-arroser { background: rgba(192,57,43,0.15); color: var(--danger); }
+.badge-surveiller { background: rgba(185,120,26,0.15); color: var(--warning); }
+.badge-conserver { background: rgba(31,122,92,0.15); color: var(--success); }
 
-/* Jauge réservoir */
-.gauge-wrap { background: rgba(120, 120, 120, 0.2); border-radius: 10px; overflow: hidden; height: 18px; margin: 12px 0; }
-.gauge-bar { height: 100%; width: 60%; background: var(--success); transition: width 0.4s ease, background 0.4s ease; }
+/* ---------------------------------------------------------------
+   Réservoirs
+   --------------------------------------------------------------- */
+.reservoir-block h3 { margin-top: 0; }
+.gauge-wrap { background: rgba(120, 120, 120, 0.2); border-radius: 10px; overflow: hidden; height: 18px; margin: 10px 0; }
+.gauge-bar { height: 100%; width: 50%; background: var(--success); transition: width 0.4s ease, background 0.4s ease; }
 
-/* Graphique */
+/* ---------------------------------------------------------------
+   Admin
+   --------------------------------------------------------------- */
+.user-ligne { display: flex; justify-content: space-between; align-items: center; background: var(--input-bg); border-radius: 10px; padding: 8px 12px; margin: 6px 0; font-size: 0.9em; }
+
+/* ---------------------------------------------------------------
+   Graphique / footer
+   --------------------------------------------------------------- */
 .chart-img { width: 100%; border-radius: 16px; margin: 12px 0; background: var(--input-bg); display: block; }
-
-/* Footer */
 .footer-perso { text-align: center; padding: 30px 12px 50px; color: var(--text-muted); font-size: 0.9em; }

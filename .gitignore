@@ -6,8 +6,8 @@ __pycache__/
 .venv/
 venv/
 
-# Interface Gradio : historique de requêtes signalées par les utilisateurs
-.gradio/
+# Base de données locale (comptes, zones, réservoirs)
+irrigai.db
 
 # Éditeurs / OS
 .vscode/

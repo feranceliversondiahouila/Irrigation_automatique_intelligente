@@ -17,139 +17,179 @@
     <span class="blob blob-c"></span>
   </div>
 
-  <nav class="glass nav-bar">
-    <span class="brand">🌱 IrrigAI</span>
-    <div class="nav-links">
-      <a href="#parametres">Paramètres</a>
-      <a href="#dashboard">Dashboard</a>
-      <a href="#analyse">Analyse</a>
+  <!-- ============================================================ -->
+  <!-- ÉCRAN DE CONNEXION                                            -->
+  <!-- ============================================================ -->
+  <div id="login-screen">
+    <div class="glass login-card">
+      <div class="login-illustration" aria-hidden="true">
+        <svg viewBox="0 0 200 200" class="plant-svg">
+          <ellipse cx="100" cy="150" rx="42" ry="8" fill="var(--accent)" opacity="0.35"/>
+          <path d="M100,150 C100,120 100,100 100,80" stroke="var(--accent)" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path class="leaf leaf-left" d="M100,112 C70,107 60,82 75,62 C95,77 100,97 100,112 Z" fill="var(--accent)"/>
+          <path class="leaf leaf-right" d="M100,97 C130,92 140,67 125,47 C105,62 100,82 100,97 Z" fill="var(--accent)"/>
+          <path class="droplet" d="M150,18 C150,18 138,36 138,46 C138,53 143,58 150,58 C157,58 162,53 162,46 C162,36 150,18 150,18 Z" fill="var(--accent-2)"/>
+        </svg>
+      </div>
+      <h1>🌱 IrrigAI</h1>
+      <p class="subtitle">Connecte-toi pour accéder au tableau de bord.</p>
+      <label>Nom d'utilisateur
+        <input type="text" id="login-username" placeholder="admin" autocomplete="username">
+      </label>
+      <label>Mot de passe
+        <input type="password" id="login-password" placeholder="••••••" autocomplete="current-password">
+      </label>
+      <button id="btn-login" class="btn-primary btn-block">Se connecter</button>
+      <p id="login-erreur" class="login-erreur"></p>
     </div>
-    <button id="theme-toggle" aria-label="Changer de thème clair/sombre" title="Changer de thème">🌙</button>
-  </nav>
+  </div>
 
-  <header class="hero">
-    <div class="glass hero-card">
-      <h1>IrrigAI</h1>
-      <p class="tagline">L'irrigation pilotée par les données, pas par le hasard.</p>
-      <p class="subtitle">
-        Réseau de neurones entraîné sur des données agronomiques réalistes,
-        combiné à de vraies prévisions météo et à un suivi du réservoir d'eau
-        de la ferme.
-      </p>
-    </div>
-  </header>
+  <!-- ============================================================ -->
+  <!-- APPLICATION (cachée tant que non connecté)                   -->
+  <!-- ============================================================ -->
+  <div id="app" hidden>
 
-  <main>
+    <nav class="glass nav-bar">
+      <span class="brand">🌱 IrrigAI</span>
+      <div class="nav-links">
+        <a href="#zones">Zones</a>
+        <a href="#reservoirs">Réservoirs</a>
+        <a href="#admin" id="nav-admin" hidden>Administration</a>
+        <a href="#journal">Journal</a>
+        <a href="#analyse">Analyse</a>
+      </div>
+      <span id="user-badge" class="user-badge"></span>
+      <button id="btn-logout" class="btn-ghost btn-small">Déconnexion</button>
+      <button id="theme-toggle" aria-label="Changer de thème clair/sombre" title="Changer de thème">🌙</button>
+    </nav>
 
-    <!-- ============================================================ -->
-    <section id="parametres" class="glass section-card">
-      <h2>⚙️ Paramètres — Prédiction ponctuelle</h2>
-      <div class="grid-2">
-        <div class="controls">
-          <label>💧 Humidité du sol (%) — <span data-out="hum_sol">30</span>
-            <input type="range" id="hum_sol" min="0" max="100" value="30">
-          </label>
-          <label>🌡️ Température de l'air (°C) — <span data-out="temp_air">28</span>
-            <input type="range" id="temp_air" min="0" max="50" step="0.5" value="28">
-          </label>
-          <label>💨 Humidité de l'air (%) — <span data-out="hum_air">50</span>
-            <input type="range" id="hum_air" min="0" max="100" value="50">
-          </label>
-          <label>🌧️ Pluie prévue sous 24h (mm) — <span data-out="pluie">0</span>
-            <input type="range" id="pluie" min="0" max="40" step="0.5" value="0">
-          </label>
-          <label>🪨 Type de sol
-            <select id="sol"></select>
-          </label>
-          <label>🌾 Type de culture
-            <select id="culture"></select>
-          </label>
-          <div class="actions">
-            <button id="btn-effacer" class="btn-ghost">Effacer</button>
-            <button id="btn-predire" class="btn-primary">Soumettre</button>
+    <header class="hero">
+      <div class="glass hero-card">
+        <h1>IrrigAI</h1>
+        <p class="tagline">L'irrigation pilotée par les données, pas par le hasard.</p>
+        <p class="subtitle">
+          Météo réelle, réseau de neurones, santé des cultures et conseils
+          phytosanitaires — combinés en un diagnostic complet par zone.
+        </p>
+      </div>
+    </header>
+
+    <main>
+
+      <!-- ============================================================ -->
+      <section id="zones" class="glass section-card">
+        <h2>🗺️ Zones & Diagnostic</h2>
+        <p class="hint">Chaque zone a sa propre ville : le diagnostic utilise la météo réelle de cette ville.</p>
+        <div id="zones-liste" class="zones-liste"></div>
+      </section>
+
+      <!-- ============================================================ -->
+      <section id="reservoirs" class="glass section-card">
+        <h2>🛢️ Réservoirs</h2>
+        <div class="grid-2">
+          <div class="reservoir-block">
+            <h3>💧 Eau</h3>
+            <div class="gauge-wrap"><div class="gauge-bar" id="gauge-eau"></div></div>
+            <p id="detail-eau" class="info-box"></p>
+            <div class="row">
+              <input type="number" id="recharge-eau-input" value="1000">
+              <button id="btn-recharge-eau" class="btn-ghost">➕ Recharger</button>
+            </div>
+          </div>
+          <div class="reservoir-block">
+            <h3>🧴 Pesticide</h3>
+            <div class="gauge-wrap"><div class="gauge-bar" id="gauge-pesticide"></div></div>
+            <p id="detail-pesticide" class="info-box"></p>
+            <div class="row">
+              <input type="number" id="recharge-pesticide-input" value="50">
+              <button id="btn-recharge-pesticide" class="btn-ghost">➕ Recharger</button>
+            </div>
           </div>
         </div>
-        <div class="result-panel">
-          <h3>📊 Résultat de l'analyse IA</h3>
-          <p id="resultat-prediction" class="result-text">—</p>
+        <h3>📉 Économie d'eau estimée</h3>
+        <pre id="economie-eau" class="mono-box">Chargement…</pre>
+      </section>
+
+      <!-- ============================================================ -->
+      <section id="admin" class="glass section-card" hidden>
+        <h2>🛠️ Administration</h2>
+
+        <h3>➕ Ajouter une zone</h3>
+        <div class="grid-2">
+          <div class="controls">
+            <label>Nom de la zone <input type="text" id="new-zone-nom" placeholder="Zone E"></label>
+            <label>Ville <input type="text" id="new-zone-ville" placeholder="Kinshasa"></label>
+            <label>Type de sol <select id="new-zone-sol"></select></label>
+            <label>Culture <select id="new-zone-culture"></select></label>
+            <label>Surface (hectares) <input type="number" id="new-zone-surface" value="1.0" step="0.1"></label>
+            <label>Humidité du sol initiale (%) <input type="number" id="new-zone-humidite" value="40"></label>
+            <button id="btn-ajouter-zone" class="btn-primary">Ajouter la zone</button>
+          </div>
+          <div class="controls">
+            <h4 style="margin-top:0;">👤 Ajouter un utilisateur</h4>
+            <label>Nom d'utilisateur <input type="text" id="new-user-username"></label>
+            <label>Mot de passe <input type="text" id="new-user-password"></label>
+            <label class="checkbox-line">
+              <input type="checkbox" id="new-user-superuser"> Superutilisateur
+            </label>
+            <button id="btn-ajouter-user" class="btn-primary">Ajouter l'utilisateur</button>
+
+            <h4>Utilisateurs existants</h4>
+            <div id="liste-users"></div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ============================================================ -->
-    <section id="dashboard" class="glass section-card">
-      <h2>📊 Dashboard — Zones, météo & réservoir</h2>
+      <!-- ============================================================ -->
+      <section id="journal" class="glass section-card">
+        <h2>📜 Journal des actions automatiques</h2>
+        <div id="journal-liste" class="mono-box"></div>
+      </section>
 
-      <h3>🌦️ Météo réelle</h3>
-      <div class="row">
-        <input type="text" id="ville" value="Pointe-Noire" placeholder="Ville de la ferme">
-        <button id="btn-meteo" class="btn-primary">Récupérer la météo</button>
-      </div>
-      <p id="meteo-resume" class="info-box">Pas encore de météo récupérée — valeurs par défaut utilisées.</p>
+      <!-- ============================================================ -->
+      <section id="analyse" class="glass section-card">
+        <h2>🔍 Analyse & Explicabilité</h2>
 
-      <h3>🗺️ Zones de la ferme</h3>
-      <div id="zones-grid" class="zones-grid"></div>
-      <button id="btn-analyser" class="btn-primary">🔍 Analyser toutes les zones</button>
-      <p id="zones-resultat" class="info-box"></p>
+        <h3>Quelles variables influencent le plus la décision ?</h3>
+        <img id="img-importance" src="/api/importance-variables" alt="Importance des variables" class="chart-img">
 
-      <h3>🛢️ Réservoir d'eau</h3>
-      <div class="gauge-wrap"><div class="gauge-bar" id="gauge-bar"></div></div>
-      <p id="reservoir-detail" class="info-box"></p>
-      <div class="row">
-        <input type="number" id="recharge-input" value="1000">
-        <button id="btn-recharger" class="btn-ghost">➕ Recharger le réservoir</button>
-      </div>
-
-      <h3>📉 Économie d'eau estimée</h3>
-      <pre id="economie-eau" class="mono-box">Chargement…</pre>
-    </section>
-
-    <!-- ============================================================ -->
-    <section id="analyse" class="glass section-card">
-      <h2>🔍 Analyse & Explicabilité</h2>
-
-      <h3>Quelles variables influencent le plus la décision ?</h3>
-      <img id="img-importance" src="/api/importance-variables" alt="Importance des variables" class="chart-img">
-
-      <h3>🌡️ Simulateur « Et si… »</h3>
-      <p class="hint">Compare la recommandation avant/après un changement de température.</p>
-      <div class="grid-2">
-        <div class="controls">
-          <label>Humidité du sol (%) — <span data-out="s-hum-sol">35</span>
-            <input type="range" id="s-hum-sol" min="0" max="100" value="35">
-          </label>
-          <label>Humidité de l'air (%) — <span data-out="s-hum-air">50</span>
-            <input type="range" id="s-hum-air" min="0" max="100" value="50">
-          </label>
-          <label>Pluie prévue (mm) — <span data-out="s-pluie">0</span>
-            <input type="range" id="s-pluie" min="0" max="40" step="0.5" value="0">
-          </label>
-          <label>Type de sol
-            <select id="s-sol"></select>
-          </label>
-          <label>Type de culture
-            <select id="s-culture"></select>
-          </label>
+        <h3>🌡️ Simulateur « Et si… »</h3>
+        <p class="hint">Compare la recommandation avant/après un changement de température.</p>
+        <div class="grid-2">
+          <div class="controls">
+            <label>Humidité du sol (%) — <span data-out="s-hum-sol">35</span>
+              <input type="range" id="s-hum-sol" min="0" max="100" value="35">
+            </label>
+            <label>Humidité de l'air (%) — <span data-out="s-hum-air">50</span>
+              <input type="range" id="s-hum-air" min="0" max="100" value="50">
+            </label>
+            <label>Pluie prévue (mm) — <span data-out="s-pluie">0</span>
+              <input type="range" id="s-pluie" min="0" max="40" step="0.5" value="0">
+            </label>
+            <label>Type de sol <select id="s-sol"></select></label>
+            <label>Type de culture (large) <select id="s-culture"></select></label>
+          </div>
+          <div class="controls">
+            <label>Température actuelle (°C) — <span data-out="s-temp-base">25</span>
+              <input type="range" id="s-temp-base" min="0" max="50" step="0.5" value="25">
+            </label>
+            <label>Température hypothétique (°C) — <span data-out="s-temp-hyp">40</span>
+              <input type="range" id="s-temp-hyp" min="0" max="50" step="0.5" value="40">
+            </label>
+            <button id="btn-comparer" class="btn-primary">Comparer</button>
+            <p id="comparaison-resultat" class="info-box"></p>
+          </div>
         </div>
-        <div class="controls">
-          <label>Température actuelle (°C) — <span data-out="s-temp-base">25</span>
-            <input type="range" id="s-temp-base" min="0" max="50" step="0.5" value="25">
-          </label>
-          <label>Température hypothétique (°C) — <span data-out="s-temp-hyp">40</span>
-            <input type="range" id="s-temp-hyp" min="0" max="50" step="0.5" value="40">
-          </label>
-          <button id="btn-comparer" class="btn-primary">Comparer</button>
-          <p id="comparaison-resultat" class="info-box"></p>
-        </div>
-      </div>
-    </section>
+      </section>
 
-  </main>
+    </main>
 
-  <footer class="footer-perso">
-    🌱 <strong>IrrigAI</strong> — Projet pédagogique d'irrigation automatique intelligente.
-    Modèle entraîné localement, météo réelle via Open-Meteo.
-  </footer>
+    <footer class="footer-perso">
+      🌱 <strong>IrrigAI</strong> — Projet pédagogique d'irrigation automatique intelligente.
+      Modèle entraîné localement, météo réelle via Open-Meteo.
+    </footer>
+
+  </div>
 
   <script src="js/app.js"></script>
 </body>
